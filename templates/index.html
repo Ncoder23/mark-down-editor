@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Markdown Editor</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <textarea id="markdown-input" placeholder="Type your markdown here..."></textarea>
+        <div id="rendered-output">
+            <div id="output-content"></div>
+            <div class="button-container">
+                <button id="export-btn" title="Export as PDF (requires wkhtmltopdf)">Export</button>
+                <button id="copy-btn">Copy</button>
+            </div>
+        </div>
+    </div>
+    <div id="pdf-notice" style="display: block; position: fixed; bottom: 10px; left: 10px; background: #ffe57f; padding: 10px; border-radius: 5px; max-width: 400px;">
+        <p><strong>Note:</strong> For PDF export to work, you need to install one of these libraries:</p>
+        <ul style="margin-top: 5px; margin-bottom: 5px;">
+            <li><code>pip install weasyprint</code> (recommended)</li>
+            <li>Or <code>pip install reportlab html2text</code> (alternative)</li>
+        </ul>
+        <button onclick="this.parentElement.style.display='none'" style="background: #333; color: white; border: none; padding: 5px 10px; float: right;">×</button>
+    </div>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html> 

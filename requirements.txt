@@ -1,0 +1,7 @@
+Flask==2.0.1
+Flask-Cors==3.0.10
+Markdown==3.3.4
+WeasyPrint==52.5
+reportlab==3.6.1
+html2text==2020.1.16
+gunicorn==20.1.0 
