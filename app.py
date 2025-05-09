@@ -45,7 +45,7 @@ def export_pdf():
         if not html_content:
             return jsonify({"error": "No HTML content provided"}), 400
 
-        # Add some basic styling for the PDF
+        # Add some basic styling for the PDF and HTML
         styled_html = f"""
         <!DOCTYPE html>
         <html>
@@ -53,11 +53,57 @@ def export_pdf():
             <meta charset="UTF-8">
             <style>
                 @page {{ size: A4; margin: 1cm; }}
-                body {{ font-family: Arial, sans-serif; margin: 0; }}
-                pre {{ background-color: #f5f5f5; padding: 10px; border-radius: 5px; }}
-                code {{ font-family: monospace; }}
-                h1, h2, h3, h4, h5, h6 {{ color: #333; }}
-                a {{ color: #0066cc; }}
+                body {{ 
+                    font-family: Arial, sans-serif; 
+                    margin: 20px;
+                    line-height: 1.6;
+                    max-width: 800px;
+                    margin: 0 auto;
+                    padding: 20px;
+                }}
+                pre {{ 
+                    background-color: #f5f5f5; 
+                    padding: 10px; 
+                    border-radius: 5px;
+                    overflow-x: auto;
+                }}
+                code {{ 
+                    font-family: monospace;
+                    background-color: #f5f5f5;
+                    padding: 2px 4px;
+                    border-radius: 3px;
+                }}
+                h1, h2, h3, h4, h5, h6 {{ 
+                    color: #333;
+                    margin-top: 24px;
+                    margin-bottom: 16px;
+                }}
+                a {{ 
+                    color: #0066cc;
+                    text-decoration: none;
+                }}
+                a:hover {{
+                    text-decoration: underline;
+                }}
+                blockquote {{
+                    border-left: 4px solid #ddd;
+                    margin: 0;
+                    padding-left: 16px;
+                    color: #666;
+                }}
+                table {{
+                    border-collapse: collapse;
+                    width: 100%;
+                    margin: 16px 0;
+                }}
+                th, td {{
+                    border: 1px solid #ddd;
+                    padding: 8px;
+                    text-align: left;
+                }}
+                th {{
+                    background-color: #f5f5f5;
+                }}
             </style>
         </head>
         <body>
@@ -108,7 +154,7 @@ def export_pdf():
             app.logger.error(
                 f"ReportLab PDF generation failed: {str(pdf_error)}")
 
-            # If reportlab fails, return HTML file instead
+            # If reportlab fails, return the styled HTML
             app.logger.warning("PDF generation failed, falling back to HTML")
             response = make_response(styled_html)
             response.headers['Content-Type'] = 'text/html'
