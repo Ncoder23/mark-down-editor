@@ -8,6 +8,20 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
+# Add this at the top of your file to handle the Werkzeug import issue
+try:
+    from werkzeug.urls import url_quote
+except ImportError:
+    # Fallback for newer Werkzeug versions
+    try:
+        from werkzeug.utils import url_quote
+    except ImportError:
+        # Define our own simple version if all else fails
+        import urllib.parse
+
+        def url_quote(string, charset='utf-8'):
+            return urllib.parse.quote(string)
+
 
 @app.route('/')
 def index():
