@@ -94,7 +94,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Show the PDF notice if HTML was downloaded instead of PDF
                 pdfNotice.style.display = 'block';
                 pdfNotice.style.opacity = '1';
-                alert('PDF generation is not available. HTML file has been downloaded instead.\n\nTo enable PDF export, please install WeasyPrint:\npip install weasyprint');
+                alert('PDF generation is not available. HTML file has been downloaded instead.');
             }
         })
         .catch(error => {

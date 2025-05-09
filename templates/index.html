@@ -19,11 +19,7 @@
         </div>
     </div>
     <div id="pdf-notice" style="display: block; position: fixed; bottom: 10px; left: 10px; background: #ffe57f; padding: 10px; border-radius: 5px; max-width: 400px;">
-        <p><strong>Note:</strong> For PDF export to work, you need to install one of these libraries:</p>
-        <ul style="margin-top: 5px; margin-bottom: 5px;">
-            <li><code>pip install weasyprint</code> (recommended)</li>
-            <li>Or <code>pip install reportlab html2text</code> (alternative)</li>
-        </ul>
+        <p><strong>Note:</strong> This markdown editor allows you to export your content as PDF.</p>
         <button onclick="this.parentElement.style.display='none'" style="background: #333; color: white; border: none; padding: 5px 10px; float: right;">×</button>
     </div>
     <script src="{{ url_for('static', filename='script.js') }}"></script>

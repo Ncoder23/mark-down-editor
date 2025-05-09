@@ -53,71 +53,54 @@ def export_pdf():
         """
 
         try:
-            # Try WeasyPrint first
-            from weasyprint import HTML
-            app.logger.info("Using WeasyPrint for PDF generation")
+            # Try using reportlab + html2text as primary method
+            from reportlab.lib.pagesizes import A4
+            from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+            from reportlab.lib.styles import getSampleStyleSheet
+            import html2text
 
-            # Create PDF from HTML string
-            pdf_file = io.BytesIO()
-            HTML(string=styled_html).write_pdf(pdf_file)
-            pdf_file.seek(0)
+            app.logger.info("Using reportlab + html2text for PDF generation")
+
+            # Convert HTML to markdown text
+            text_maker = html2text.HTML2Text()
+            text_maker.ignore_links = False
+            markdown_text = text_maker.handle(html_content)
+
+            # Create PDF
+            pdf_buffer = io.BytesIO()
+            doc = SimpleDocTemplate(pdf_buffer, pagesize=A4)
+            styles = getSampleStyleSheet()
+
+            # Split markdown into paragraphs and convert to reportlab elements
+            elements = []
+            for line in markdown_text.split('\n\n'):
+                if line.strip():
+                    elements.append(Paragraph(line.replace(
+                        '\n', '<br/>'), styles['Normal']))
+                    elements.append(Spacer(1, 12))
+
+            doc.build(elements)
+            pdf_buffer.seek(0)
 
             # Return PDF
-            response = make_response(pdf_file.getvalue())
+            response = make_response(pdf_buffer.getvalue())
             response.headers['Content-Type'] = 'application/pdf'
             response.headers['Content-Disposition'] = 'attachment; filename=rendered.pdf'
             response.headers['Access-Control-Allow-Origin'] = '*'
             return response
 
-        except ImportError:
-            # If WeasyPrint is not available, try another approach
-            try:
-                # Try using reportlab + html2text as a fallback
-                from reportlab.lib.pagesizes import A4
-                from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
-                from reportlab.lib.styles import getSampleStyleSheet
-                import html2text
+        except Exception as pdf_error:
+            # Log the error
+            app.logger.error(
+                f"ReportLab PDF generation failed: {str(pdf_error)}")
 
-                app.logger.info(
-                    "Using reportlab + html2text for PDF generation")
-
-                # Convert HTML to markdown text
-                text_maker = html2text.HTML2Text()
-                text_maker.ignore_links = False
-                markdown_text = text_maker.handle(html_content)
-
-                # Create PDF
-                pdf_buffer = io.BytesIO()
-                doc = SimpleDocTemplate(pdf_buffer, pagesize=A4)
-                styles = getSampleStyleSheet()
-
-                # Split markdown into paragraphs and convert to reportlab elements
-                elements = []
-                for line in markdown_text.split('\n\n'):
-                    if line.strip():
-                        elements.append(Paragraph(line.replace(
-                            '\n', '<br/>'), styles['Normal']))
-                        elements.append(Spacer(1, 12))
-
-                doc.build(elements)
-                pdf_buffer.seek(0)
-
-                # Return PDF
-                response = make_response(pdf_buffer.getvalue())
-                response.headers['Content-Type'] = 'application/pdf'
-                response.headers['Content-Disposition'] = 'attachment; filename=rendered.pdf'
-                response.headers['Access-Control-Allow-Origin'] = '*'
-                return response
-
-            except ImportError:
-                # If all PDF libraries fail, return HTML file instead
-                app.logger.warning(
-                    "All PDF generation methods failed, falling back to HTML")
-                response = make_response(styled_html)
-                response.headers['Content-Type'] = 'text/html'
-                response.headers['Content-Disposition'] = 'attachment; filename=rendered.html'
-                response.headers['Access-Control-Allow-Origin'] = '*'
-                return response
+            # If reportlab fails, return HTML file instead
+            app.logger.warning("PDF generation failed, falling back to HTML")
+            response = make_response(styled_html)
+            response.headers['Content-Type'] = 'text/html'
+            response.headers['Content-Disposition'] = 'attachment; filename=rendered.html'
+            response.headers['Access-Control-Allow-Origin'] = '*'
+            return response
 
     except Exception as e:
         app.logger.error(f"Export error: {str(e)}\n{traceback.format_exc()}")

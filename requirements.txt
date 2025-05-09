@@ -1,7 +1,9 @@
 Flask==2.0.1
 Flask-Cors==3.0.10
 Markdown==3.3.4
-WeasyPrint==52.5
-reportlab==3.6.1
+# Use a specific version of reportlab that has wheels for Python 3.11
+reportlab==3.6.12
 html2text==2020.1.16
-gunicorn==20.1.0 
+gunicorn==20.1.0
+# WeasyPrint has system dependencies that might be hard to install on Render
+# Let's make it optional and rely on reportlab as the primary PDF generator 
